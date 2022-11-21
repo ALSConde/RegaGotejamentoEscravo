@@ -1,11 +1,18 @@
 #include <Arduino.h>
 #include <iostream>
 
-#define DIFJ 2
-#define ID 1 // Identificador unico do microcontrolador
-
 using namespace std;
 
+/*
+TODO LIST:
+Levantar a curva do sensor de umidade
+Funcao de leitura que descarte de valores irreais
+*/
+
+#define DIFJ 2 // Pino de saida da solenoide
+#define ID 1   // Identificador unico do microcontrolador
+
+// Definicao das variaveis
 float PUmidade;
 float media;
 float leitura;
@@ -29,17 +36,20 @@ void setup()
 
 void loop()
 {
-  delay(250);
-  umidade = 0;
-  // Variavel umidade para ler a umidade registrada pelo sensor
-  // TODO: Levantar a curva do sensor
+  delay(750);
 
+  // Variavel umidade para ler a umidade registrada pelo sensor
+  umidade = 0;
+
+  // TODO: Levantar a curva do sensor
+  // Leitura do sensor e ajuste da curva de umidade
   leitura = analogRead(A0);
   umidade += (-0.0002 * leitura * leitura + 10.25 * leitura - 0.000000000001) / 100;
 
   // Calcular a media
   media = (double)(umidade / (1));
   Serial.println(media);
+
   // Comparacao da media para liberar o fluxo d'agua
   if (media < PUmidade)
   {
@@ -52,10 +62,9 @@ void loop()
     dif = 1;
   }
   digitalWrite(DIFJ, dif);
-  delay(500);
 }
 
-// TODO: Funcao de comunicacao serial
+// Funcao de tratamento dos eventos seriais
 void serialEvent()
 {
   // Verificar a disponibilidade da Serial
