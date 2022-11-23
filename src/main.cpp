@@ -24,6 +24,10 @@ Funcao de leitura que descarte de valores irreais
 // Definicao do intervalo de tempo entre as leituras
 #define INTLEITURA 1500
 
+/**
+ * @brief
+ * Funcao de tratamento dos eventos seriais
+ */
 void masterCOMEnv();
 
 // Definicao das variaveis
@@ -102,24 +106,32 @@ void loop()
   }
 }
 
-// Funcao de tratamento dos eventos seriais
-void masterCOMEnv()
+void readSerial(String *aux)
 {
-  String aux = "";
-  String id = "";
-  String strUmidade = "";
   char c;
 
   while (masterCOM.available() > 0)
   {
     c = (char)masterCOM.read();
-    aux.concat(c);
+    aux->concat(c);
 
     if (c == ';')
     {
       break;
     }
   }
+}
+
+/*ROTINAS AUXILIARES*/
+
+void masterCOMEnv()
+{
+  String aux = "";
+  String id = "";
+  String strUmidade = "";
+
+  // Ler a serial
+  readSerial(&aux);
 
   // Obter o Id enviado na serial
   id = aux.substring(aux.indexOf(":") + 1, aux.indexOf(","));
@@ -127,8 +139,8 @@ void masterCOMEnv()
   // Verificar o id recebido
   if (id.equalsIgnoreCase(ID))
   {
-    // Formatar a mensagem a ser enviada
-    msg = "Umidade: " + String(media) + " Parametro: " + PUmidade + ";";
+    // Formatar a mensagem a ser enviada como resposta contendo o Campo, A media de umidade e o parametro definido
+    msg = "Campo: " + String(ID) + " Umidade: " + media + " Parametro: " + PUmidade + ";";
 
     // Atualizar aux removendo o id e obter a umidade que sera definida como parametro
     aux = aux.substring(aux.indexOf(",") + 1, aux.indexOf(";"));
